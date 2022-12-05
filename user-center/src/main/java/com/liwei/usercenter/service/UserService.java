@@ -3,6 +3,8 @@ package com.liwei.usercenter.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liwei.usercenter.model.domain.User;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
 * @author Macro-Laplace
 * @description 针对表【user(用户表)】的数据库操作Service
@@ -18,4 +20,12 @@ public interface UserService extends IService<User> {
      * @return 新用户id
      */
     long userRegister(String userAccount,String userPassword,String checkPassword);
+
+    /**
+     * 用户登陆
+     * @param userAccount 用户账户
+     * @param userPassword 用户密码
+     * @return 脱敏后的用户信息
+     */
+    User userLogin(String userAccount, String userPassword, HttpServletRequest request);
 }

@@ -13,7 +13,8 @@ class UserCenterApplicationTests {
 
     @Test
     void contextLoads() {
-
+        StringBuilder append = new StringBuilder().append("userAccount: ").append(12).append("\n");
+        System.out.println(append.toString());
     }
 
 }
