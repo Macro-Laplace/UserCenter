@@ -84,7 +84,7 @@ public class User implements Serializable {
     /**
      * 用户角色 0 - 普通用户 1 - 管理员
      */
-    //private Integer userRole;
+    private Integer userRole;
 
     /**
      * 星球编号
