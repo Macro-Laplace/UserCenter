@@ -1,23 +1,22 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import request from '@/plugins/globalRequest';
 
 /** 获取当前的用户 GET /api/user/current */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request< API.CurrentUser>('/api/user/current', {
+  return request<API.BaseResponse<API.CurrentUser>>('/api/user/current', {
     method: 'GET',
     ...(options || {}),
   });
 }
 
-/** 退出登录接口 POST /api/login/outLogin */
+/** 退出登录接口 POST /api/user/logout */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/login/outLogin', {
+  return request<API.BaseResponse<number>>('/api/user/logout', {
     method: 'POST',
     ...(options || {}),
   });
 }
-
 
 /** 登录接口 POST /api/user/login */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
@@ -42,6 +41,15 @@ export async function register(body: API.RegisterParams, options?: { [key: strin
     ...(options || {}),
   });
 }
+
+/** 搜索用户 GET /api/user/search */
+export async function searchUsers(options?: { [key: string]: any }) {
+  return request<API.BaseResponse<API.CurrentUser[]>>('/api/user/search', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
 
 /** 此处后端没有提供注释 GET /api/notices */
 export async function getNotices(options?: { [key: string]: any }) {

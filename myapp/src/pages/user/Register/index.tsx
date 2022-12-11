@@ -52,7 +52,7 @@ const Register: React.FC = () => {
             }
           }}
           logo={<img alt="logo" src={SYSTEM_LOGO}/>}
-          title="编程导航知识星球"
+          title="用户中心"
           subTitle={'由Ant Design修改而来'}
           initialValues={{
             autoLogin: true,
