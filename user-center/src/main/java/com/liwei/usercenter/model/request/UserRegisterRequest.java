@@ -14,8 +14,14 @@ import java.io.Serializable;
 public class UserRegisterRequest implements Serializable {
 
     private static final long serialVersionUID = -1376444615544489299L;
+
     private String userAccount;
+
     private String userPassword;
+
     private String checkPassword;
+
+    private String planetCode;
+
 
 }

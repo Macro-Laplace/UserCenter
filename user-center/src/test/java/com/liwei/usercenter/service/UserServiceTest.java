@@ -41,20 +41,21 @@ public class UserServiceTest {
     @Test
     @Transactional
     void userRegister() {
+        String planetCode="1";
         //密码长度>8
-        long result = userService.userRegister("liweiwei", "", "123456");
+        long result = userService.userRegister("liweiwei", "", "123456",planetCode);
         Assertions.assertEquals(-1, result);
         //账户名长度>4
-        result=userService.userRegister("li", "123456", "123456");
+        result=userService.userRegister("li", "123456", "123456",planetCode);
         Assertions.assertEquals(-1, result);
         //密码跟验证码一样
-        result=userService.userRegister("liweiliwei", "1234567", "123456");
+        result=userService.userRegister("liweiliwei", "1234567", "123456",planetCode);
         Assertions.assertEquals(-1, result);
         //插入已有用户名
-        result=userService.userRegister("liwei", "12345678", "12345678");
+        result=userService.userRegister("liwei", "12345678", "12345678",planetCode);
         Assertions.assertEquals(-1, result);
         //注册新用户
-        result=userService.userRegister("liweiliweilii", "12345678", "12345678");
+        result=userService.userRegister("liweiliweilii", "12345678", "12345678",planetCode);
         Assertions.assertNotEquals(-1, result);
     }
 }

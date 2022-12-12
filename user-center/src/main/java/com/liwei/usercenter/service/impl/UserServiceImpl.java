@@ -1,8 +1,9 @@
 package com.liwei.usercenter.service.impl;
-import java.util.Date;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.liwei.usercenter.common.ErrorCode;
+import com.liwei.usercenter.exception.BusinessException;
 import com.liwei.usercenter.model.domain.User;
 import com.liwei.usercenter.service.UserService;
 import com.liwei.usercenter.mapper.UserMapper;
@@ -13,10 +14,10 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.liwei.usercenter.common.ErrorCode.NULL_ERROR;
 import static com.liwei.usercenter.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
@@ -39,27 +40,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private UserMapper userMapper;
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String userAccount, String userPassword, String checkPassword,String planetCode) {
         //校验
-        if(StringUtils.isAnyBlank(userAccount,userPassword,checkPassword))
-            return -1;
+        if(StringUtils.isAnyBlank(userAccount,userPassword,checkPassword,planetCode))
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数为空");
 
         if(userAccount.length()<4)
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户账号长度小于4");
 
         if(userPassword.length()<8)
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户密码长度小于8");
+
+        if(planetCode.length()>10)
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"星球号码长度大于10");
         //userAccount不能包含特殊字符
         String validPattern ="[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if(matcher.find())
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"账号包含特殊字符");
         //账户不可重复,需要查数据库的放到后面做
         QueryWrapper<User> userQW = new QueryWrapper<>();
         userQW.eq("userAccount",userAccount);
         long count = userMapper.selectCount(userQW);
         if(count>0){
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"账号重复");
+        }
+        //星球不可重复
+        QueryWrapper<User> planetCodeQW = new QueryWrapper<>();
+        planetCodeQW.eq("planetCode",planetCode);
+        count = userMapper.selectCount(planetCodeQW);
+        if(count>0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"星球编号重复");
         }
         //对密码加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
@@ -67,6 +78,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = new User();
         user.setUserAccount(userAccount);
         user.setUserPassword(encryptPassword);
+        user.setPlanetCode(planetCode);
         boolean saveResult = this.save(user);
 
         //User那边id是Long包装类，这边返回long,所以判断一下防止拆箱失败
@@ -122,6 +134,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public User getSafetyUser(User originUser) {
+        if(originUser == null)
+            return null;
         User safetyUser = new User();
         safetyUser.setId(originUser.getId());
         safetyUser.setUsername(originUser.getUsername());
@@ -132,9 +146,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safetyUser.setEmail(originUser.getEmail());
         safetyUser.setUserStatus(originUser.getUserStatus());
         safetyUser.setCreateTime(originUser.getCreateTime());
+        safetyUser.setPlanetCode(originUser.getPlanetCode());
         safetyUser.setUserRole(originUser.getUserRole());
 
         return safetyUser;
+    }
+
+    @Override
+    public int userLogout(HttpServletRequest request) {
+        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        return 1;
     }
 }
 

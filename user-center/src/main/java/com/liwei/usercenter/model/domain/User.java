@@ -89,7 +89,7 @@ public class User implements Serializable {
     /**
      * 星球编号
      */
-    //private String planetCode;
+    private String planetCode;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
